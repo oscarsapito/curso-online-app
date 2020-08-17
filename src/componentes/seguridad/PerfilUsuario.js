@@ -1,13 +1,15 @@
-import React ,{ useState } from 'react';
+import React ,{ useState, useEffect } from 'react';
 import style from '../Tool/Style';
 import {Container,Typography,Grid, TextField,Button} from '@material-ui/core';
+import { obtenerUsuarioActual, actualizarUsuario } from '../../actions/UsuarioAction';
 
 const PerfilUsuario = () => {
     const [usuario, setUsuario] = useState({
-        NombreCompleto : '',
-        Email          : '',
-        Password       : '',
-        ConfirmarPassword : ''
+        nombreCompleto : '',
+        email          : '',
+        password       : '',
+        confirmaPassword : '',
+        userName        : ''
     })
 
     const ingresarValoresMemoria = e=> {
@@ -18,6 +20,20 @@ const PerfilUsuario = () => {
         }));
     }
 
+    useEffect(() => {
+        obtenerUsuarioActual().then(response => {
+            console.log('esta es la data del objeto response del usuario actual', response);
+            setUsuario(response.data);
+        });
+        }, [])
+
+        const guardarUsuario = e =>{
+            e.preventDefault();
+            actualizarUsuario(usuario).then(response => {
+                console.log('se actualizo exitosamente el usuario',response);
+                window.localStorage.setItem("token_seguridad", response.data.token);                                
+            });
+        }
 
     return (
         <Container component="main" maxWidth="md" justify="center">
@@ -29,20 +45,23 @@ const PerfilUsuario = () => {
             <form style={style.form}>
                 <Grid container spacing={2}>
                     <Grid item xs={12} md={12}>
-                        <TextField name="NombreCompleto" value={usuario.NombreCompleto} onChange={ingresarValoresMemoria} variant="outlined" fullWidth label="Ingrese nombre y apellidos"/>
+                        <TextField name="nombreCompleto" value={usuario.nombreCompleto} onChange={ingresarValoresMemoria} variant="outlined" fullWidth label="Ingrese nombre y apellidos"/>
                     </Grid>
                     <Grid item xs={12} md={6}>
-                        <TextField name="Email" value={usuario.Email} onChange={ingresarValoresMemoria} variant="outlined" fullWidth label="Ingrese email"/>
+                        <TextField name="userName" value={usuario.userName} onChange={ingresarValoresMemoria} variant="outlined" fullWidth label="Ingrese UserName"/>
                     </Grid>
                     <Grid item xs={12} md={6}>
-                        <TextField name="Password" value={usuario.Password} type="password" onChange={ingresarValoresMemoria} variant="outlined" fullWidth label="Ingrese password"/>
+                        <TextField name="email" value={usuario.email} onChange={ingresarValoresMemoria} variant="outlined" fullWidth label="Ingrese email"/>
                     </Grid>
                     <Grid item xs={12} md={6}>
-                        <TextField name="ConfirmarPassword"  value={usuario.ConfirmarPassword} type="password" onChange={ingresarValoresMemoria} variant="outlined" fullWidth label="confirme password"/>
+                        <TextField name="password" value={usuario.password} type="password" onChange={ingresarValoresMemoria} variant="outlined" fullWidth label="Ingrese password"/>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <TextField name="confirmaPassword"  value={usuario.confirmaPassword} type="password" onChange={ingresarValoresMemoria} variant="outlined" fullWidth label="confirme password"/>
                     </Grid>
                     <Grid container justify="center">
                         <Grid item xs={12} md={6}>
-                            <Button type="submit" fullWidth variant="contained" size="large" color="primary" style={style.submit}>
+                            <Button type="submit"  onClick = {guardarUsuario} fullWidth variant="contained" size="large" color="primary" style={style.submit}>
                                 Guardar Datos
                             </Button>
                         </Grid>
