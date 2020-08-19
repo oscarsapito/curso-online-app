@@ -1,11 +1,12 @@
-/*jshint esversion: 6 */
-
 import HttpCliente from '../servicios/HttpCliente';
 
 export const registrarUsuario = usuario => {
     return new Promise( (resolve, eject) => {         //Promesa
         HttpCliente.post('/Usuario/registrar', usuario).then(response => {
             resolve(response);
+        })
+        .catch(error => {
+            resolve(error.response);
         })
     })
 }
@@ -28,6 +29,9 @@ export const actualizarUsuario = (usuario) => {
     return new Promise((resolve, eject) => {
         HttpCliente.put('/Usuario', usuario).then(response => {            
             resolve(response);
+        })
+        .catch(error => {
+            resolve(error.response);
         })
     })
 }
